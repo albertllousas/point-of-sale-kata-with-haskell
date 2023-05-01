@@ -5,6 +5,30 @@ Point of sale kata implementation, [here](https://github.com/albertllousas/point
 
 ## Tests
 
+```haskell
+spec :: Spec
+spec = do
+
+  let chips = Product { code = "901234", name = "Chips", price = 1.50 }
+  let redBull = Product { code = "507780", name = "Red Bull", price = 2.35 }
+  let findProduct = buildFindProductInMemory (Map.fromList [("901234", chips), ("507780", redBull)])
+
+  describe "Acceptance test" $ do
+
+    it "Point of sale should perform a sale with multiple products" $ do
+      let scan =  buildScan findProduct
+      let result = do
+                   scan "901234"
+                   scan "901234"
+                   scan "unknown"
+                   scan "507780"
+                   scan "507780"
+                   remove "507780"
+                   checkout
+      StateMonad.runState result emptyShoppingCart `shouldBe`  (Display "5.35", ShoppingCart [redBull, chips, chips])
+```
+[All tests](test/PointOfSaleSpec.hs)
+
 ```shell
 > stack test
 
